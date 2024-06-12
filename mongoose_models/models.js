@@ -9,17 +9,16 @@ mongoose.connect(`mongodb+srv://bogdan:${process.env.PWD}@issuetracker.bhvvixg.m
     });
 const IssueTrackerSchema = mongoose.Schema(
     {
-        "_id": String,
         "issue_title": String,
         "issue_text": String,
         "created_on": Date,
         "updated_on": Date,
         "created_by": String,
-        "assigned_to": String,
-        "open": Boolean,
-        "status_text": String
+        "assigned_to": { type: String, default: '' },
+        "open": { type: Boolean, default: true },
+        "status_text": { type: String, default: '' }
     }
 )
 const IssueTrackerModel = mongoose.model("IssueTrackerMODEL", IssueTrackerSchema);
 
-module.exports = IssueTrackerModel;
+module.exports = IssueTrackerSchema;
