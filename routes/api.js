@@ -7,10 +7,11 @@ module.exports = function (app) {
 
   app.route('/api/issues/:project')
 
-    .get(function (req, res) {
+    .get(async function (req, res) {
       let project = req.params.project;
-      res.sendFile(process.cwd() + '/views/issue.html')
-
+      let IssueTrackerModel = mongoose.model(project, IssueTrackerSchema);
+      let all = await IssueTrackerModel.find(req.query);
+      res.send(all);
     })
 
     .post(async function (req, res) {
