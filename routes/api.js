@@ -23,21 +23,32 @@ module.exports = function (app) {
       issue.created_on = d.toISOString();
       issue.updated_on = d.toISOString();
       issue = await IssueTrackerModel.create(issue);
-      console.log(++i);
-      console.log(req.params, req.body, issue);
       res.send(issue);
     })
 
-    .put(function (req, res) {
+    .put(async function (req, res) {
+      console.log(req.body)
       let project = req.params.project;
-      res.sendFile(process.cwd() + '/views/issue.html')
-
+      let { _id, ...update } = req.body;
+      if (!req.body._id) return res.send({ error: 'missing _id' });
+      if (Object.values(update).length == 0) return res.send({ error: 'no update field(s) sent', '_id': _id });
+      let d = new Date();
+      update.updated_on = d.toISOString();
+      let IssueTrackerModel = mongoose.model(project, IssueTrackerSchema);
+      let issue = await IssueTrackerModel.findOneAndUpdate({ _id: _id }, update);
+      if (!issue) return res.send({ error: 'could not update', '_id': _id });
+      issue = await IssueTrackerModel.findOne({ _id: _id });
+      res.send({ result: 'successfully updated', '_id': _id });
     })
 
-    .delete(function (req, res) {
+    .delete(async function (req, res) {
+      if (!req.body._id) return res.send({ error: 'missing _id' });
       let project = req.params.project;
-      res.sendFile(process.cwd() + '/views/issue.html')
-
+      let IssueTrackerModel = mongoose.model(project, IssueTrackerSchema);
+      let issue = await IssueTrackerModel.findOne({ _id: req.body._id });
+      if (!issue) return res.send({ error: 'could not delete', '_id': req.body._id });
+      await issue.deleteOne();
+      res.send({ result: 'successfully deleted', '_id': req.body._id })
     });
 
 };
