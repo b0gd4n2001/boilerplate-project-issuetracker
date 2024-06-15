@@ -27,7 +27,6 @@ module.exports = function (app) {
     })
 
     .put(async function (req, res) {
-      console.log(req.body)
       let project = req.params.project;
       let { _id, ...update } = req.body;
       if (!req.body._id) return res.send({ error: 'missing _id' });
